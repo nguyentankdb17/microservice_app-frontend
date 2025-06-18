@@ -1,0 +1,4 @@
+pre-push:
+    jobs:
+        - name: format
+          run: npx prettier --write --ignore-unknown {push_files}
