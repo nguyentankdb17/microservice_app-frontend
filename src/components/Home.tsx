@@ -1,12 +1,42 @@
 import React from "react";
 import type { Car } from "../type/types";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 
 const Home: React.FC = () => {
     const token = localStorage.getItem('access_token');
     const navigate = useNavigate();
-    const CAR_SERVICE_API_URL = "http://localhost:8000/api/cars";
+
+    const CAR_SERVICE_API_URL = `${import.meta.env.VITE_CAR_SERVICE}/api/cars`;
+    const USER_SERVICE_API_URL = `${import.meta.env.VITE_USER_SERVICE}/api/user`;
     const [cars, setCars] = React.useState<Car[]>([]);
+    const [isAdmin, setIsAdmin] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+        // Check if the user is an admin 
+        const checkAdmin = async () => {
+            if (!token) {
+                console.error("Please log in to view our products.");
+                return;
+            }
+            try {
+                const response = await fetch(`${USER_SERVICE_API_URL}/check_admin`, {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error("You are logged in with user role");
+                }
+                setIsAdmin(true);
+            } catch (error) {
+                console.error("Failed to check user role:", error);
+            }
+        };
+
+        checkAdmin();
+    }, [USER_SERVICE_API_URL, token]);
+
     React.useEffect(() => {
         // Fetch car data from the API
         const fetchCars = async () => {
@@ -38,6 +68,10 @@ const Home: React.FC = () => {
         try {
             const response = await fetch(`${CAR_SERVICE_API_URL}/delete/${carId}`, {
                 method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
             });
             if (!response.ok) {
                 throw new Error("Failed to delete car");
@@ -52,21 +86,32 @@ const Home: React.FC = () => {
         navigate('/update-item/', { state: { car } });
     };
 
+    if (!token) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-[#0F172A]">
+                <div className="text-center text-white">
+                    <h1 className="text-4xl font-bold mb-4">Please Log In</h1>
+                    <p className="text-lg mb-6">You need to log in to view our products.</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="relative flex flex-col items-center bg-[#0F172A] pt-10">
             <div className="flex flex-col items-center">
-                <h6 className="flex items-center text-center text-4xl font-bold text-white">OUR PRODUCTS</h6>
-                <Link
+                <h6 className="flex items-center mb-3 text-center text-4xl font-bold text-white">OUR PRODUCTS</h6>
+                {isAdmin &&(<Link
                     to="/add-item"
                     className="rounded-md bg-green-700 px-7 my-5 py-3 text-base font-medium text-white hover:bg-green-900"
                 >
                     Add New Item 
-                </Link>
+                </Link>)}
                 <section className="bg-gray-2 dark:bg-dark mt-5">
                     <div className="container mx-auto">
                         <div className="-mx-4 cursor-pointer flex flex-wrap">
-                            {cars.map((car, index) => (
-                                <div key={index} className="w-full px-4 md:w-1/2 xl:w-1/3">
+                            {cars.map((car) => (
+                                <div key={car.id} className="w-full px-4 md:w-1/2 xl:w-1/3">
                                     <div
                                             className="shadow-1 hover:shadow-3 mb-10 overflow-hidden rounded-lg bg-[#1B2532] duration-300 hover:scale-110"
                                         >
@@ -83,25 +128,31 @@ const Home: React.FC = () => {
                                                         {car.name}
                                                     </span>
                                                 </h3>
-                                                <p className="mb-7 text-base leading-relaxed text-gray-500">
+                                                <p className="my-3 text-base leading-relaxed text-gray-500">
                                                     {car.description}
                                                 </p>
                                             </div>
-                                            <div className="flex items-center justify-between bg-[#1B2532] px-4">
-                                                <div className="flex items-center">
-                                                    <div>
-                                                        {
-                                                            car.is_available ? (
-                                                                <span className="text-green-500 font-bold">Available</span>
-                                                            ) : (
-                                                                <span className="text-red-500 font-bold">Not Available</span>
-                                                            )
-                                                        }
-                                                    </div>
-                                                    <div></div>
+                                            <div className="flex items-center justify-between bg-[#1B2532] px-10 pb-6">
+                                                <div className="items-center">
+                                                    {
+                                                        car.is_available ? (
+                                                            <span className="font-bold text-white bg-green-600 px-2 py-1 rounded-md">
+                                                                Available
+                                                            </span>
+                                                        ) : (
+                                                            <span className="font-bold text-white bg-red-600 px-2 py-1 rounded-md">
+                                                                Not Available
+                                                            </span>
+                                                        )
+                                                    }
+                                                </div>
+                                                <div>
+                                                    <span className="ml-2 text-2xl font-bold text-white">
+                                                        ${car.price}
+                                                    </span>
                                                 </div>
                                             </div>
-                                            <div className="flex flex-col items-center pb-5">
+                                            {isAdmin && (<div className="flex flex-col items-center pb-5">
                                                 <div className="flex flex-row space-x-5">
                                                     <button
                                                         title="Edit"
@@ -134,7 +185,7 @@ const Home: React.FC = () => {
                                                         </svg>
                                                     </button>
                                                 </div>
-                                            </div>
+                                            </div>)}
                                         </div>
                                 </div>
                             ))}
