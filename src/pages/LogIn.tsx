@@ -5,7 +5,7 @@ const Login: React.FC = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState<string>("");
-    const USER_SERVICE_API_URL = `${import.meta.env.VITE_USER_SERVICE}/api/user`;
+    const USER_SERVICE_API_URL = `/api/user`;
 
     // Handle login form submission
     const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {

@@ -6,8 +6,8 @@ const Home: React.FC = () => {
     const token = localStorage.getItem("access_token");
     const navigate = useNavigate();
 
-    const CAR_SERVICE_API_URL = `${import.meta.env.VITE_CAR_SERVICE}/api/cars`;
-    const USER_SERVICE_API_URL = `${import.meta.env.VITE_USER_SERVICE}/api/user`;
+    const CAR_SERVICE_API_URL = `/api/cars`;
+    const USER_SERVICE_API_URL = `/api/user`;
     const [cars, setCars] = React.useState<Car[]>([]);
     const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(false);
     const [isAdmin, setIsAdmin] = React.useState<boolean>(false);

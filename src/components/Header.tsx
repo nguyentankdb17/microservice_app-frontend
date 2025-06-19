@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import type { User } from "../type/types";
 const Header: React.FC = () => {
-    const USER_SERVICE_API_URL = `${import.meta.env.VITE_USER_SERVICE}/api/user`;
+    const USER_SERVICE_API_URL = `/api/user`;
     const [navbarOpen, setNavbarOpen] = useState(false);
     const [user, setUser] = React.useState<User | null>(null);
 
