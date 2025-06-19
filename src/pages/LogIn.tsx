@@ -1,10 +1,7 @@
 import React from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
-    const navigate = useNavigate();
-
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState<string>("");
@@ -20,7 +17,7 @@ const Login: React.FC = () => {
             const response = await fetch(`${USER_SERVICE_API_URL}/login`, {
                 method: "POST",
                 headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
+                    "Content-Type": "application/x-www-form-urlencoded",
                 },
                 body: data.toString(),
             });
@@ -32,14 +29,13 @@ const Login: React.FC = () => {
             const result = await response.json();
             localStorage.setItem("access_token", result.access_token);
             setMessage("Login successfully!");
-            navigate("/", {state: { isAdmin: result.is_admin }});
             window.location.href = "/";
         } catch (error) {
             console.error("Login error:", error);
             setMessage("Login failed. Please try again.");
         }
-    }
-    
+    };
+
     return (
         <section className="flex h-screen flex-col items-center bg-[#0F172A] py-15">
             <div className="container">
@@ -64,18 +60,18 @@ const Login: React.FC = () => {
                                             placeholder="Username"
                                             value={username}
                                             onChange={(e) => setUsername(e.target.value)}
-                                            className="w-full rounded-md bg-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full rounded-md bg-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                         />
                                         <input
                                             type="password"
                                             placeholder="Password"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="w-full rounded-md bg-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full rounded-md bg-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                         />
                                         <button
                                             type="submit"
-                                            className="rounded-md cursor-pointer bg-blue-600 px-6 py-3 text-base font-medium text-white hover:bg-blue-700"
+                                            className="cursor-pointer rounded-md bg-blue-600 px-6 py-3 text-base font-medium text-white hover:bg-blue-700"
                                         >
                                             Sign In
                                         </button>
@@ -93,6 +89,6 @@ const Login: React.FC = () => {
             </div>
         </section>
     );
-}
+};
 
 export default Login;

@@ -13,7 +13,7 @@ const AddItem: React.FC = () => {
 
     const addNewItem = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const token = localStorage.getItem('access_token');
+        const token = localStorage.getItem("access_token");
         if (!token) {
             setMessage("Please log in to add a new item.");
             return;
@@ -50,8 +50,6 @@ const AddItem: React.FC = () => {
         }
     };
 
-    
-    
     return (
         <section className="flex flex-col items-center bg-[#0F172A] py-15">
             <div className="container">
@@ -74,7 +72,7 @@ const AddItem: React.FC = () => {
                                                 type="text"
                                                 value={carName}
                                                 onChange={(e) => setCarName(e.target.value)}
-                                                className="w-full rounded-md bg-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full rounded-md bg-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-2">
@@ -83,7 +81,7 @@ const AddItem: React.FC = () => {
                                                 type="text"
                                                 value={carBrand}
                                                 onChange={(e) => setCarBrand(e.target.value)}
-                                                className="w-full rounded-md bg-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full rounded-md bg-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-2">
@@ -92,7 +90,7 @@ const AddItem: React.FC = () => {
                                                 type="text"
                                                 value={carImageUrl}
                                                 onChange={(e) => setCarImageUrl(e.target.value)}
-                                                className="w-full rounded-md bg-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full rounded-md bg-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-2">
@@ -101,7 +99,7 @@ const AddItem: React.FC = () => {
                                                 type="number"
                                                 value={carPrice}
                                                 onChange={(e) => setCarPrice(Number(e.target.value))}
-                                                className="w-full rounded-md bg-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full rounded-md bg-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-2">
@@ -110,13 +108,13 @@ const AddItem: React.FC = () => {
                                                 type="textarea"
                                                 value={carDescription}
                                                 onChange={(e) => setCarDescription(e.target.value)}
-                                                className="w-full rounded-md bg-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full rounded-md bg-white/10 px-4 py-2 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-2">
                                             <p className="text-left text-gray-400">Car Status</p>
                                             <div className="flex items-center gap-4">
-                                                <div >
+                                                <div>
                                                     <input
                                                         type="radio"
                                                         name="carStatus"
@@ -124,9 +122,7 @@ const AddItem: React.FC = () => {
                                                         onChange={(e) => setCarStatus(e.target.value)}
                                                         className="mr-2"
                                                     />
-                                                    <label className="text-white mr-4">
-                                                        Available
-                                                    </label>
+                                                    <label className="mr-4 text-white">Available</label>
                                                 </div>
                                                 <div>
                                                     <input
@@ -136,16 +132,13 @@ const AddItem: React.FC = () => {
                                                         onChange={(e) => setCarStatus(e.target.value)}
                                                         className="mr-2"
                                                     />
-                                                    <label className="text-white">
-                                                        Not Available
-                                                    </label>
+                                                    <label className="text-white">Not Available</label>
                                                 </div>
                                             </div>
-                                        
                                         </div>
                                         <button
                                             type="submit"
-                                            className="rounded-md cursor-pointer bg-blue-600 px-6 py-3 text-base font-medium text-white hover:bg-blue-700"
+                                            className="cursor-pointer rounded-md bg-blue-600 px-6 py-3 text-base font-medium text-white hover:bg-blue-700"
                                         >
                                             Add Item
                                         </button>
@@ -163,6 +156,6 @@ const AddItem: React.FC = () => {
             </div>
         </section>
     );
-}
+};
 
 export default AddItem;

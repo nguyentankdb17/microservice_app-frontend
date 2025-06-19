@@ -6,10 +6,10 @@ export type Car = {
     price: number;
     description: string;
     is_available: boolean;
-}
+};
 
 export type User = {
     id: string;
     username: string;
     is_admin: boolean;
-}
+};

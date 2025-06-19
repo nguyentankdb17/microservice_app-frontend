@@ -8,7 +8,7 @@ const Header: React.FC = () => {
 
     useEffect(() => {
         const checkLogin = async () => {
-            const token = localStorage.getItem('access_token');
+            const token = localStorage.getItem("access_token");
             if (!token) return;
 
             const res = await fetch(`${USER_SERVICE_API_URL}/user-info`, {
@@ -21,7 +21,7 @@ const Header: React.FC = () => {
                 const data = await res.json();
                 setUser(data);
             } else {
-                localStorage.removeItem('access_token');
+                localStorage.removeItem("access_token");
             }
         };
 
@@ -30,23 +30,22 @@ const Header: React.FC = () => {
 
     const handleLogout = async () => {
         try {
-            const token = localStorage.getItem('access_token');
+            const token = localStorage.getItem("access_token");
             const response = await fetch(`${USER_SERVICE_API_URL}/logout`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
-                }
+                },
             });
             if (!response.ok) {
                 throw new Error("Logout failed");
             }
-        }
-        catch (error) {
+        } catch (error) {
             console.error("Logout error:", error);
         }
-        localStorage.removeItem('access_token');
+        localStorage.removeItem("access_token");
         setUser(null);
-        window.location.href = '/';
+        window.location.href = "/";
     };
 
     return (
@@ -97,7 +96,9 @@ const Header: React.FC = () => {
 
                         {user ? (
                             <div className="flex items-center gap-4">
-                                <span className="text-white">👤 <strong>{user.username}</strong> ({user.is_admin ? "Admin" : "User"})</span>
+                                <span className="text-white">
+                                    👤 <strong>{user.username}</strong> ({user.is_admin ? "Admin" : "User"})
+                                </span>
                                 <button
                                     onClick={handleLogout}
                                     className="cursor-pointer rounded-md bg-red-700 px-3 py-2 text-base font-medium text-white hover:bg-red-900"
@@ -106,7 +107,7 @@ const Header: React.FC = () => {
                                 </button>
                             </div>
                         ) : (
-                            <div className="hidden space-x-3 justify-end pr-16 sm:flex lg:pr-0">
+                            <div className="hidden justify-end space-x-3 pr-16 sm:flex lg:pr-0">
                                 <Link
                                     to="/login"
                                     className="rounded-md bg-blue-700 px-7 py-3 text-base font-medium text-white hover:bg-blue-900"
