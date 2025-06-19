@@ -13,7 +13,7 @@ const UpdateItem: React.FC = () => {
     const [carStatus, setCarStatus] = useState<string>(car?.is_available ? "Available" : "Not Available");  
     const [message, setMessage] = useState<string>("");
 
-    const CAR_SERVICE_API_URL = "http://localhost:8000/api/cars";
+    const CAR_SERVICE_API_URL = `${import.meta.env.VITE_CAR_SERVICE}/api/cars`;
 
     const addNewItem = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -36,7 +36,7 @@ const UpdateItem: React.FC = () => {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    //Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(data),
             });
@@ -50,8 +50,8 @@ const UpdateItem: React.FC = () => {
             window.location.href = "/";
             console.log(result);
         } catch (error) {
-            console.error("Error adding item:", error);
-            setMessage("Failed to add item. Please try again.");
+            console.error("Error updating item:", error);
+            setMessage("Failed to update item. Please try again.");
         }
     };
 
@@ -157,7 +157,7 @@ const UpdateItem: React.FC = () => {
                                             Update Item
                                         </button>
                                     </form>
-                                    {message == "Item added successfully!" ? (
+                                    {message == "Item updated successfully!" ? (
                                         <div className="mt-4 text-sm text-green-500">{message}</div>
                                     ) : (
                                         <div className="mt-4 text-sm text-red-500">{message}</div>

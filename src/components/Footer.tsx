@@ -4,7 +4,7 @@ const Footer: React.FC = () => {
     return (
         <div>
             <div className="flex flex-col items-center bg-[#0F172A] pt-10">
-                <h6 className="mb-6 flex items-center text-center text-4xl font-bold text-white">OUR PARTNER</h6>
+                <h6 className="mb-6 flex items-center text-center text-4xl font-bold text-white">OUR PARTNERS</h6>
                 <div className="flex flex-row justify-center gap-10 max-w-md max-h-md">
                     <a href="#" target="_blank" className="block py-3">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/BMW.svg/2048px-BMW.svg.png" alt="gcp" className="h-xs w-xs" />

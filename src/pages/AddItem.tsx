@@ -9,7 +9,7 @@ const AddItem: React.FC = () => {
     const [carStatus, setCarStatus] = useState<string>("");
     const [message, setMessage] = useState<string>("");
 
-    const CAR_SERVICE_API_URL = "http://localhost:8000/api/cars";
+    const CAR_SERVICE_API_URL = `${import.meta.env.VITE_CAR_SERVICE}/api/cars`;
 
     const addNewItem = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -31,7 +31,7 @@ const AddItem: React.FC = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    //Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(data),
             });

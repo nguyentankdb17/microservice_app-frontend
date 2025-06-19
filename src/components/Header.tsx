@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import type { User } from "../type/types";
 const Header: React.FC = () => {
-    const USER_SERVICE_API_URL = "http://localhost:8001/api/user";
+    const USER_SERVICE_API_URL = `${import.meta.env.VITE_USER_SERVICE}/api/user`;
     const [navbarOpen, setNavbarOpen] = useState(false);
     const [user, setUser] = React.useState<User | null>(null);
 
@@ -11,7 +11,7 @@ const Header: React.FC = () => {
             const token = localStorage.getItem('access_token');
             if (!token) return;
 
-            const res = await fetch(`${USER_SERVICE_API_URL}/profile`, {
+            const res = await fetch(`${USER_SERVICE_API_URL}/user-info`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -26,7 +26,7 @@ const Header: React.FC = () => {
         };
 
         checkLogin();
-    }, []);
+    }, [USER_SERVICE_API_URL]);
 
     const handleLogout = async () => {
         try {

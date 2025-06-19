@@ -1,10 +1,14 @@
 import React from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 const Login: React.FC = () => {
+    const navigate = useNavigate();
+
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState<string>("");
-    const USER_SERVICE_API_URL = "http://localhost:8001/api/user";
+    const USER_SERVICE_API_URL = `${import.meta.env.VITE_USER_SERVICE}/api/user`;
 
     // Handle login form submission
     const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -28,6 +32,7 @@ const Login: React.FC = () => {
             const result = await response.json();
             localStorage.setItem("access_token", result.access_token);
             setMessage("Login successfully!");
+            navigate("/", {state: { isAdmin: result.is_admin }});
             window.location.href = "/";
         } catch (error) {
             console.error("Login error:", error);
