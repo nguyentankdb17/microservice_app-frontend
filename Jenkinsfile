@@ -163,7 +163,7 @@ pipeline {
                             echo "Updating image tag in frontend_values.yaml to ${dockerImageTag}"
                             
                             // Update frontend_values.yaml file
-                            sh "sed -i 's|image: .*|image: ${dockerImageTag}|g' frontend_values.yaml"
+                            sh "sed -i 's|tag: .*|tag: \"${dockerImageTag}\"|g' frontend_values.yaml"
                 
                             // Configure git user
                             sh "git config user.email 'nguyentankdb17@gmail.com'"
