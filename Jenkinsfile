@@ -19,13 +19,18 @@ pipeline {
                   # Container 2: Node.js for install and src code quality checks
                   - name: node
                     image: node:20-alpine
-                    command: [sleep]
-                    args: [9999999]
+                    command: ["sleep"]
+                    args: ["9999999"]
                     volumeMounts:
-                    - name: workspace-volume
-                      mountPath: /home/jenkins/agent
+                        - name: workspace-volume
+                          mountPath: /home/jenkins/agent
+                    resources:
+                        requests:
+                          ephemeral-storage: "512Mi"
+                        limits:
+                          ephemeral-storage: "1Gi"
                       
-                  # Container 4: Kaniko for building image
+                  # Container 3: Kaniko for building image
                   # CHANGE: Use Kaniko 'debug' image. This image contains shell and 'sleep' command.
                   - name: kaniko
                     image: gcr.io/kaniko-project/executor:debug
@@ -81,7 +86,7 @@ pipeline {
                     script {
                         echo "Installing Node.js dependencies..."
                         dir('app') {
-                            sh 'npm install'
+                            sh 'npm ci'
                         }
                         echo "Dependencies installed successfully."
                     }
