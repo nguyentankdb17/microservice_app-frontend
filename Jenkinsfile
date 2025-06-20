@@ -117,10 +117,6 @@ pipeline {
 
         // Build and Push with KANIKO
         stage('4. Build & Push Docker Image (with Kaniko)') {
-            // Run this stage only when there are changes in the app (src code) directory
-            when {
-                changeset "**/app/**"
-            }
             steps {
                 // Run `script` outside `container` to get git commit first
                 script {
@@ -144,10 +140,6 @@ pipeline {
 
         // Update K8s manifest repository with new image tag
         stage('5. Update K8s Manifest Repo') {
-            // Run this stage only when there are changes in the app (src code) directory
-            when {
-                changeset "**/app/**"
-            }
             steps {
                 // Run in default 'jnlp' container
                 script {
