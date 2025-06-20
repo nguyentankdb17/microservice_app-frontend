@@ -104,8 +104,8 @@ pipeline {
             steps {
                 container('node') {
                     script {
-                        echo 'Install required packages'
-                        sh 'npm install --no-save eslint prettier'
+                        echo 'Install required packages to check'
+                        sh 'npm install --no-save eslint eslint-plugin-react-hooks eslint-plugin-react-refresh prettier prettier-plugin-tailwindcss'
                         
                         echo "Running Code Quality check..."
                         dir('app') {
