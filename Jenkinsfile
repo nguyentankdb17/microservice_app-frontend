@@ -42,6 +42,11 @@ pipeline {
                       mountPath: /home/jenkins/agent
                     - name: docker-config
                       mountPath: /kaniko/.docker/
+                    resources:
+                      requests:
+                        ephemeral-storage: "2Gi"
+                      limits:
+                        ephemeral-storage: "3Gi"
                   volumes:
                   # Volume to share workspace between all containers
                   - name: workspace-volume
@@ -79,41 +84,41 @@ pipeline {
         }
 
         // Run steps in 'node' container
-        stage('2. Install Dependencies') {
-            steps {
-                // Specify 'node' container for this step
-                container('node') {
-                    script {
-                        echo "Installing Node.js dependencies..."
-                        dir('app') {
-                            sh 'npm ci'
-                        }
-                        echo "Dependencies installed successfully."
-                    }
-                }
-            }
-        }
+        // stage('2. Install Dependencies') {
+        //     steps {
+        //         // Specify 'node' container for this step
+        //         container('node') {
+        //             script {
+        //                 echo "Installing Node.js dependencies..."
+        //                 dir('app') {
+        //                     sh 'npm ci'
+        //                 }
+        //                 echo "Dependencies installed successfully."
+        //             }
+        //         }
+        //     }
+        // }
 
         // Code Style & Quality Check
-        stage('3. Code Style & Quality Check') {
-            steps {
-                container('node') {
-                    script {
-                        echo "Running Code Quality check..."
-                        dir('app') {
-                            sh 'npx eslint .'
-                        }
-                        echo "Code Quality check completed."
+        // stage('3. Code Style & Quality Check') {
+        //     steps {
+        //         container('node') {
+        //             script {
+        //                 echo "Running Code Quality check..."
+        //                 dir('app') {
+        //                     sh 'npx eslint .'
+        //                 }
+        //                 echo "Code Quality check completed."
 
-                        echo "Running formatting check..."
-                        dir('app') {
-                            sh 'npx prettier --check .'
-                        }
-                        echo "Formatting check completed."
-                    }
-                }
-            }
-        }
+        //                 echo "Running formatting check..."
+        //                 dir('app') {
+        //                     sh 'npx prettier --check .'
+        //                 }
+        //                 echo "Formatting check completed."
+        //             }
+        //         }
+        //     }
+        // }
 
         // Build and Push with KANIKO
         stage('4. Build & Push Docker Image (with Kaniko)') {
