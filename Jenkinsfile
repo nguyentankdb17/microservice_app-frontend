@@ -127,11 +127,14 @@ pipeline {
                     // Step 2: Enter 'kaniko' container to build
                     container('kaniko') {
                         echo "Building and pushing image with Kaniko: ${dockerImageTag}"
-                        sh """
-                        /kaniko/executor --context `pwd` \\
-                                         --dockerfile `pwd`/app/Dockerfile \\
-                                         --destination ${dockerImageTag}
-                        """
+                        dir('app') {
+                          sh """
+                            /kaniko/executor \
+                              --context . \
+                              --dockerfile Dockerfile \
+                              --destination ${dockerImageTag}
+                          """
+                        }
                         echo "Build and push image to DockerHub with Kaniko completed."
                     }
                 }
