@@ -114,8 +114,9 @@ pipeline {
                         //     prettier \
                         //     prettier-plugin-tailwindcss
                         // '''
-                        sh 'npm ci'
-
+                        dir('app') {
+                            sh 'npm ci'
+                        }
                         
                         echo "Running Code Quality check..."
                         dir('app') {
