@@ -107,12 +107,12 @@ pipeline {
                         echo 'Install required packages to start checking...'
                         sh '''
                           npm install --no-save \
-                            eslint@9.25.0 \
-                            typescript-eslint@8.30.1 \
-                            eslint-plugin-react-hooks@5.2.0 \
-                            eslint-plugin-react-refresh@0.4.19 \
-                            prettier@3.5.3 \
-                            prettier-plugin-tailwindcss@0.6.11
+                            eslint \
+                            typescript-eslint \
+                            eslint-plugin-react-hooks \
+                            eslint-plugin-react-refresh \
+                            prettier \
+                            prettier-plugin-tailwindcss
                         '''
 
                         
@@ -124,7 +124,7 @@ pipeline {
 
                         echo "Running formatting check..."
                         dir('app') {
-                            sh 'npx prettier --check .'
+                            sh 'npx prettier --config .prettierrc.yaml --check .'
                         }
                         echo "Formatting check completed."
                     }
