@@ -84,41 +84,41 @@ pipeline {
         }
 
         // Run steps in 'node' container
-        // stage('2. Install Dependencies') {
-        //     steps {
-        //         // Specify 'node' container for this step
-        //         container('node') {
-        //             script {
-        //                 echo "Installing Node.js dependencies..."
-        //                 dir('app') {
-        //                     sh 'npm ci'
-        //                 }
-        //                 echo "Dependencies installed successfully."
-        //             }
-        //         }
-        //     }
-        // }
+        stage('2. Install Dependencies') {
+            steps {
+                // Specify 'node' container for this step
+                container('node') {
+                    script {
+                        echo "Installing Node.js dependencies..."
+                        dir('app') {
+                            sh 'npm ci'
+                        }
+                        echo "Dependencies installed successfully."
+                    }
+                }
+            }
+        }
 
         // Code Style & Quality Check
-        // stage('3. Code Style & Quality Check') {
-        //     steps {
-        //         container('node') {
-        //             script {
-        //                 echo "Running Code Quality check..."
-        //                 dir('app') {
-        //                     sh 'npx eslint .'
-        //                 }
-        //                 echo "Code Quality check completed."
+        stage('3. Code Style & Quality Check') {
+            steps {
+                container('node') {
+                    script {
+                        echo "Running Code Quality check..."
+                        dir('app') {
+                            sh 'npx eslint .'
+                        }
+                        echo "Code Quality check completed."
 
-        //                 echo "Running formatting check..."
-        //                 dir('app') {
-        //                     sh 'npx prettier --check .'
-        //                 }
-        //                 echo "Formatting check completed."
-        //             }
-        //         }
-        //     }
-        // }
+                        echo "Running formatting check..."
+                        dir('app') {
+                            sh 'npx prettier --check .'
+                        }
+                        echo "Formatting check completed."
+                    }
+                }
+            }
+        }
 
         // Build and Push with KANIKO
         stage('4. Build & Push Docker Image (with Kaniko)') {
@@ -165,10 +165,10 @@ pipeline {
                         sh "git clone -b main git@github.com:nguyentankdb17/microservice_app-config.git cd-config-repo"
                 
                         dir('cd-config-repo') {
-                            echo "Updating image tag in frontend_values.yaml to ${dockerImageTag}"
+                            echo "Updating image tag in frontend_values.yaml to ${gitCommit}"
                             
                             // Update frontend_values.yaml file
-                            sh "sed -i 's|tag: .*|tag: \"${dockerImageTag}\"|g' frontend_values.yaml"
+                            sh "sed -i 's|tag: .*|tag: \"${gitCommit}\"|g' frontend_values.yaml"
                 
                             // Configure git user
                             sh "git config user.email 'nguyentankdb17@gmail.com'"
