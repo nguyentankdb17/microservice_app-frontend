@@ -84,26 +84,29 @@ pipeline {
         }
 
         // Run steps in 'node' container
-        stage('2. Install Dependencies') {
-            steps {
-                // Specify 'node' container for this step
-                container('node') {
-                    script {
-                        echo "Installing Node.js dependencies..."
-                        dir('app') {
-                            sh 'npm ci'
-                        }
-                        echo "Dependencies installed successfully."
-                    }
-                }
-            }
-        }
+        // stage('2. Install Dependencies') {
+        //     steps {
+        //         // Specify 'node' container for this step
+        //         container('node') {
+        //             script {
+        //                 echo "Installing Node.js dependencies..."
+        //                 dir('app') {
+        //                     sh 'npm ci'
+        //                 }
+        //                 echo "Dependencies installed successfully."
+        //             }
+        //         }
+        //     }
+        // }
 
         // Code Style & Quality Check
-        stage('3. Code Style & Quality Check') {
+        stage('2. Code Style & Quality Check') {
             steps {
                 container('node') {
                     script {
+                        echo 'Install required packages'
+                        sh 'npm install --no-save eslint prettier'
+                        
                         echo "Running Code Quality check..."
                         dir('app') {
                             sh 'npx eslint .'
@@ -121,7 +124,7 @@ pipeline {
         }
 
         // Build and Push with KANIKO
-        stage('4. Build & Push Docker Image (with Kaniko)') {
+        stage('3. Build & Push Docker Image (with Kaniko)') {
             steps {
                 // Run `script` outside `container` to get git commit first
                 script {
@@ -147,7 +150,7 @@ pipeline {
         }
 
         // Update K8s manifest repository with new image tag
-        stage('5. Update K8s Manifest Repo') {
+        stage('4. Update K8s Manifest Repo') {
             steps {
                 // Run in default 'jnlp' container
                 script {
