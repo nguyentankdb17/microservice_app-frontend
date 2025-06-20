@@ -83,47 +83,26 @@ pipeline {
             }
         }
 
-        // Run steps in 'node' container
-        // stage('2. Install Dependencies') {
-        //     steps {
-        //         // Specify 'node' container for this step
-        //         container('node') {
-        //             script {
-        //                 echo "Installing Node.js dependencies..."
-        //                 dir('app') {
-        //                     sh 'npm ci'
-        //                 }
-        //                 echo "Dependencies installed successfully."
-        //             }
-        //         }
-        //     }
-        // }
-
         // Code Style & Quality Check
         stage('2. Code Style & Quality Check') {
             steps {
                 container('node') {
                     script {
-                        echo 'Install required packages to start checking...'
-                        // sh '''
-                        //   npm install --no-save \
-                        //     eslint \
-                        //     typescript-eslint \
-                        //     eslint-plugin-react-hooks \
-                        //     eslint-plugin-react-refresh \
-                        //     prettier \
-                        //     prettier-plugin-tailwindcss
-                        // '''
+                        // Step 1: Install dependencies
+                        echo 'Install required dependencies to start checking...'
                         dir('app') {
                             sh 'npm ci'
                         }
-                        
+                        echo "Dependencies installed successfully"
+
+                        // Step 2: Run code quality check
                         echo "Running Code Quality check..."
                         dir('app') {
                             sh 'npx eslint .'
                         }
                         echo "Code Quality check completed."
 
+                        // Step 3: Run code style check
                         echo "Running formatting check..."
                         dir('app') {
                             sh 'npx prettier --check .'
