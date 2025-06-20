@@ -105,15 +105,16 @@ pipeline {
                 container('node') {
                     script {
                         echo 'Install required packages to start checking...'
-                        sh '''
-                          npm install --no-save \
-                            eslint \
-                            typescript-eslint \
-                            eslint-plugin-react-hooks \
-                            eslint-plugin-react-refresh \
-                            prettier \
-                            prettier-plugin-tailwindcss
-                        '''
+                        // sh '''
+                        //   npm install --no-save \
+                        //     eslint \
+                        //     typescript-eslint \
+                        //     eslint-plugin-react-hooks \
+                        //     eslint-plugin-react-refresh \
+                        //     prettier \
+                        //     prettier-plugin-tailwindcss
+                        // '''
+                        sh 'npm ci'
 
                         
                         echo "Running Code Quality check..."
@@ -124,7 +125,7 @@ pipeline {
 
                         echo "Running formatting check..."
                         dir('app') {
-                            sh 'npx prettier --config .prettierrc.yaml --check .'
+                            sh 'npx prettier --check .'
                         }
                         echo "Formatting check completed."
                     }
