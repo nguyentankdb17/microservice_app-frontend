@@ -80,7 +80,9 @@ pipeline {
                 container('node') {
                     script {
                         echo "Installing Node.js dependencies..."
-                        sh 'npm install'
+                        dir('app') {
+                            sh 'npm install'
+                        }
                         echo "Dependencies installed successfully."
                     }
                 }
@@ -93,11 +95,15 @@ pipeline {
                 container('node') {
                     script {
                         echo "Running Code Quality check..."
-                        sh 'npx eslint app/'
+                        dir('app') {
+                            sh 'npx eslint .'
+                        }
                         echo "Code Quality check completed."
 
                         echo "Running formatting check..."
-                        sh 'npx prettier "app/**/*.{js,ts,jsx,tsx,json,css,html}" --check --config app/.prettierrc'
+                        dir('app') {
+                            sh 'npx prettier --check .'
+                        }
                         echo "Formatting check completed."
                     }
                 }
