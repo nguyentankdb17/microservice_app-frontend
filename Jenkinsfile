@@ -18,7 +18,7 @@ pipeline {
 
                   # Container 2: Node.js for install and src code quality checks
                   - name: node
-                    image: node:18-alpine
+                    image: node:20-alpine
                     command: [sleep]
                     args: [9999999]
                     volumeMounts:
