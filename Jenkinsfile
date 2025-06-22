@@ -67,7 +67,7 @@ pipeline {
         USER= 'nguyentankdb17'
         DOCKER_IMAGE_NAME = 'nguyentankdb17/microservice_app_frontend'
         GIT_CONFIG_REPO_CREDENTIALS_ID = 'github'
-        GIT_CONFIG_REPO_URL = 'https://github.com/nguyentankdb17/microservice_app-config'
+        GIT_CONFIG_REPO_URL = 'git@github.com:nguyentankdb17/microservice_app-config.git'
     }
 
     stages {
@@ -76,7 +76,7 @@ pipeline {
             steps {
                 script {
                     echo "Start checking out source code..."
-                     git url: 'https://github.com/nguyentankdb17/microservice_app-frontend.git',
+                     git url: 'git@github.com:nguyentankdb17/microservice_app-frontend.git',
                         branch: 'main',
                         credentialsId: 'github'
                     echo "Checkout completed."
@@ -92,7 +92,8 @@ pipeline {
 
                     // Get the latest git commit tag
                     echo "Checking latest git commit tag..."
-                    def commitTag = sh(script: 'git tag --points-at HEAD', returnStdout: true).trim()
+                    def gitCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0, 8)
+                    def commitTag = sh(script: "git tag --contains ${gitCommit}", returnStdout: true).trim()
                     echo "Latest git commit tag is: ${commitTag}"
 
                     // Check if the tag is empty
@@ -142,8 +143,9 @@ pipeline {
                 // Run `script` outside `container` to get git commit first
                 script {
                     // Step 1: Get git commit hash in default 'jnlp' container (where git is available)
-                    def gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
-                    def dockerImageTag = "${DOCKER_IMAGE_NAME}:${gitTag}"
+                    def gitCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0, 8)
+                    def commitTag = sh(script: "git tag --contains ${gitCommit}", returnStdout: true).trim()
+                    def dockerImageTag = "${DOCKER_IMAGE_NAME}:${commitTag}"
 
                     // Step 2: Enter 'kaniko' container to build
                     container('kaniko') {
@@ -167,7 +169,8 @@ pipeline {
             steps {
                 // Run in default 'jnlp' container
                 script {
-                    def commitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
+                    def gitCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0, 8)
+                    def commitTag = sh(script: "git tag --contains ${gitCommit}", returnStdout: true).trim()
                     def dockerImageTag = "${DOCKER_IMAGE_NAME}:${commitTag}"
 
                     echo "Starting to update K8s manifest repository ..."
