@@ -80,23 +80,34 @@ pipeline {
                         branch: 'main',
                         credentialsId: 'github'
                     echo "Checkout completed."
-
-                    // Check if the latest commit has a tag
-                    def latestCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
-                    def commitTags = sh(script: "git tag --contains ${latestCommit}", returnStdout: true).trim()
-                    if (commitTags) {
-                        echo "The latest commit ${latestCommit} has the following tags: ${commitTags}"
-                    } else {
-                        echo "The latest commit ${latestCommit} does not have any tags."
-                        echo "Skipping remaining stages..."
-                        return
-                    }
                 }
             }
         }
 
+        // Check latest commit tag
+        stage('2. Check latest commit tag') {
+            steps {
+                script {
+                    sh 'git fetch --tags'
+
+                    // Get the latest git commit tag
+                    echo "Checking latest git commit tag..."
+                    def commitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
+                    echo "Latest git commit tag is: ${commitTag}"
+
+                    // Check if the tag is empty
+                    if (commitTag == '') {
+                        error "No tag found in the latest commit. The remaining pipeline will be aborted."
+                    } else {
+                        echo "Git commit tag check passed."
+                    }
+                }
+            }
+
+        }
+
         // Code Style & Quality Check
-        stage('2. Code Style & Quality Check') {
+        stage('3. Code Style & Quality Check') {
             steps {
                 container('node') {
                     script {
@@ -126,7 +137,7 @@ pipeline {
         }
 
         // Build and Push with KANIKO
-        stage('3. Build & Push Docker Image') {
+        stage('4. Build & Push Docker Image') {
             steps {
                 // Run `script` outside `container` to get git commit first
                 script {
@@ -152,12 +163,12 @@ pipeline {
         }
 
         // Update K8s manifest repository with new image tag
-        stage('4. Update K8s Manifest Repo') {
+        stage('5. Update K8s Manifest Repo') {
             steps {
                 // Run in default 'jnlp' container
                 script {
-                    def gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
-                    def dockerImageTag = "${DOCKER_IMAGE_NAME}:${gitTag}"
+                    def commitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
+                    def dockerImageTag = "${DOCKER_IMAGE_NAME}:${commitTag}"
 
                     echo "Starting to update K8s manifest repository ..."
                 
@@ -170,10 +181,10 @@ pipeline {
                         sh "git clone -b main git@github.com:nguyentankdb17/microservice_app-config.git cd-config-repo"
                 
                         dir('cd-config-repo') {
-                            echo "Updating image tag in frontend_values.yaml to ${gitTag}"
+                            echo "Updating image tag in frontend_values.yaml to ${commitTag}"
 
                             // Update frontend_values.yaml file
-                            sh "sed -i 's|tag: .*|tag: \"${gitTag}\"|g' frontend_values.yaml"
+                            sh "sed -i 's|tag: .*|tag: \"${commitTag}\"|g' frontend_values.yaml"
 
                             // Configure git user
                             sh "git config user.email '${USER}@gmail.com'"
@@ -181,14 +192,13 @@ pipeline {
 
                             // Commit and push changes
                             sh "git add frontend_values.yaml"
-                            sh "git commit -m 'CI: Update image tag to ${gitTag}'"
+                            sh "git commit -m 'CI: Update image tag to ${commitTag}'"
                             sh "git push origin main"
                         }
                     }
                 
                     echo "K8s manifest repository updated successfully."
                 }
-
             }
         }
     }
