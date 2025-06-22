@@ -29,20 +29,6 @@ const Header: React.FC = () => {
     }, [USER_SERVICE_API_URL]);
 
     const handleLogout = async () => {
-        try {
-            const token = localStorage.getItem("access_token");
-            const response = await fetch(`${USER_SERVICE_API_URL}/logout`, {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (!response.ok) {
-                throw new Error("Logout failed");
-            }
-        } catch (error) {
-            console.error("Logout error:", error);
-        }
         localStorage.removeItem("access_token");
         setUser(null);
         window.location.href = "/";
