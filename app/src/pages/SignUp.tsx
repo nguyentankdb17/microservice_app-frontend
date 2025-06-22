@@ -43,9 +43,9 @@ const SignUp: React.FC = () => {
                     <div className="border-dark-6 relative z-10 flex min-h-[328px] items-center justify-center rounded-2xl border border-dashed bg-white/10 p-6 md:p-10">
                         <div className="w-full text-center">
                             <div className="mx-auto w-full max-w-[290px] text-center">
-                                <h3 className="mb-10 text-4xl font-bold text-white">LOG IN</h3>
+                                <h3 className="mb-10 text-4xl font-bold text-white">SIGN UP</h3>
                                 <p className="mx-auto mb-5 text-base text-gray-400">
-                                    Continue by sign up with your account
+                                    Continue by filling out the form below to create an account
                                 </p>
 
                                 <div className="mx-auto my-5 flex w-full max-w-[210px] items-center justify-center">
