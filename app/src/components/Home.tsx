@@ -107,7 +107,7 @@ const Home: React.FC = () => {
     return (
         <div className="relative flex flex-col items-center bg-[#0F172A] pt-10">
             <div className="flex flex-col items-center">
-                <h6 className="mb-3 flex items-center text-center text-4xl font-bold text-yellow-600">OUR PRODUCTS</h6>
+                <h6 className="mb-4 flex items-center text-center text-4xl font-bold text-yellow-600">OUR PRODUCTS</h6>
                 {isAdmin && (
                     <Link
                         to="/add-item"
