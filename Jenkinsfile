@@ -64,9 +64,9 @@ pipeline {
 
     // Update environment variables
     environment {
-        DOCKER_IMAGE_NAME = 'nguyentankdb17/microserviceapp_frontend'
+        DOCKER_IMAGE_NAME = 'nguyentankdb17/microservice_app_frontend'
         GIT_CONFIG_REPO_CREDENTIALS_ID = 'github'
-        GIT_CONFIG_REPO_URL = 'https://github.com/nguyentankdb17/microservice_app-config'
+        GIT_CONFIG_REPO_URL = 'https://github.com/nguyentankdb17/microservice_app-config.git'
     }
 
     stages {
@@ -83,8 +83,34 @@ pipeline {
             }
         }
 
+        // Check latest commit tag
+        stage('2. Check latest commit tag') {
+            steps {
+                script {
+                    sh 'git fetch --tags'
+
+                    // Get the latest git commit tag
+                    echo "Checking latest git commit tag..."
+                    def gitCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0, 8)
+                    def commitTag = sh(script: "git tag --contains ${gitCommit}", returnStdout: true).trim()
+                    echo "Latest git commit tag is: ${commitTag}"
+
+                    // Check if the tag is empty
+                    if (commitTag == '') {
+                        echo "No tag found in the latest commit: ${gitCommit}"
+                        // Abort the pipeline if no tag is found
+                        currentBuild.result = 'ABORTED'
+                        error "No tag found in the latest commit. The remaining pipeline will be aborted."
+                    } else {
+                        echo "Git commit tag check passed."
+                    }
+                }
+            }
+
+        }
+
         // Code Style & Quality Check
-        stage('2. Code Style & Quality Check') {
+        stage('3. Code Style & Quality Check') {
             steps {
                 container('node') {
                     script {
@@ -114,13 +140,14 @@ pipeline {
         }
 
         // Build and Push with KANIKO
-        stage('3. Build & Push Docker Image (with Kaniko)') {
+        stage('4. Build & Push Docker Image') {
             steps {
                 // Run `script` outside `container` to get git commit first
                 script {
                     // Step 1: Get git commit hash in default 'jnlp' container (where git is available)
                     def gitCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0, 8)
-                    def dockerImageTag = "${DOCKER_IMAGE_NAME}:${gitCommit}"
+                    def commitTag = sh(script: "git tag --contains ${gitCommit}", returnStdout: true).trim()
+                    def dockerImageTag = "${DOCKER_IMAGE_NAME}:${commitTag}"
 
                     // Step 2: Enter 'kaniko' container to build
                     container('kaniko') {
@@ -140,13 +167,14 @@ pipeline {
         }
 
         // Update K8s manifest repository with new image tag
-        stage('4. Update K8s Manifest Repo') {
+        stage('5. Update K8s Manifest Repo') {
             steps {
                 // Run in default 'jnlp' container
                 script {
                     def gitCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0, 8)
-                    def dockerImageTag = "${DOCKER_IMAGE_NAME}:${gitCommit}"
-                
+                    def commitTag = sh(script: "git tag --contains ${gitCommit}", returnStdout: true).trim()
+                    def dockerImageTag = "${DOCKER_IMAGE_NAME}:${commitTag}"
+
                     echo "Starting to update K8s manifest repository ..."
                 
                     // Use SSH credentials
@@ -158,25 +186,24 @@ pipeline {
                         sh "git clone -b main git@github.com:nguyentankdb17/microservice_app-config.git cd-config-repo"
                 
                         dir('cd-config-repo') {
-                            echo "Updating image tag in frontend_values.yaml to ${gitCommit}"
-                            
+                            echo "Updating image tag in frontend_values.yaml to ${commitTag}"
+
                             // Update frontend_values.yaml file
-                            sh "sed -i 's|tag: .*|tag: \"${gitCommit}\"|g' frontend_values.yaml"
-                
+                            sh "sed -i 's|tag: .*|tag: \"${commitTag}\"|g' frontend_values.yaml"
+
                             // Configure git user
                             sh "git config user.email 'nguyentankdb17@gmail.com'"
                             sh "git config user.name 'nguyentankdb17'"
-                
+
                             // Commit and push changes
                             sh "git add frontend_values.yaml"
-                            sh "git commit -m 'ci: Update image tag to ${gitCommit}'"
+                            sh "git commit -m 'CI: Update image tag to ${commitTag}'"
                             sh "git push origin main"
                         }
                     }
                 
                     echo "K8s manifest repository updated successfully."
                 }
-
             }
         }
     }
