@@ -64,6 +64,7 @@ pipeline {
 
     // Update environment variables
     environment {
+        USER= 'nguyentankdb17'
         DOCKER_IMAGE_NAME = 'nguyentankdb17/microservice_app_frontend'
         GIT_CONFIG_REPO_CREDENTIALS_ID = 'github'
         GIT_CONFIG_REPO_URL = 'https://github.com/nguyentankdb17/microservice_app-config'
@@ -71,7 +72,7 @@ pipeline {
 
     stages {
         // Checkout src code from GitHub
-        stage('1. Checkout Code') {
+        stage('1. Checkout Code and Check commit Tag') {
             steps {
                 script {
                     echo "Start checking out source code..."
@@ -79,6 +80,17 @@ pipeline {
                         branch: 'main',
                         credentialsId: 'github'
                     echo "Checkout completed."
+
+                    // Check if the latest commit has a tag
+                    def latestCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                    def commitTags = sh(script: "git tag --contains ${latestCommit}", returnStdout: true).trim()
+                    if (commitTags) {
+                        echo "The latest commit ${latestCommit} has the following tags: ${commitTags}"
+                    } else {
+                        echo "The latest commit ${latestCommit} does not have any tags."
+                        echo "Skipping remaining stages..."
+                        return
+                    }
                 }
             }
         }
@@ -114,13 +126,13 @@ pipeline {
         }
 
         // Build and Push with KANIKO
-        stage('3. Build & Push Docker Image (with Kaniko)') {
+        stage('3. Build & Push Docker Image') {
             steps {
                 // Run `script` outside `container` to get git commit first
                 script {
                     // Step 1: Get git commit hash in default 'jnlp' container (where git is available)
-                    def gitCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0, 8)
-                    def dockerImageTag = "${DOCKER_IMAGE_NAME}:${gitCommit}"
+                    def gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
+                    def dockerImageTag = "${DOCKER_IMAGE_NAME}:${gitTag}"
 
                     // Step 2: Enter 'kaniko' container to build
                     container('kaniko') {
@@ -144,9 +156,9 @@ pipeline {
             steps {
                 // Run in default 'jnlp' container
                 script {
-                    def gitCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0, 8)
-                    def dockerImageTag = "${DOCKER_IMAGE_NAME}:${gitCommit}"
-                
+                    def gitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
+                    def dockerImageTag = "${DOCKER_IMAGE_NAME}:${gitTag}"
+
                     echo "Starting to update K8s manifest repository ..."
                 
                     // Use SSH credentials
@@ -158,18 +170,18 @@ pipeline {
                         sh "git clone -b main git@github.com:nguyentankdb17/microservice_app-config.git cd-config-repo"
                 
                         dir('cd-config-repo') {
-                            echo "Updating image tag in frontend_values.yaml to ${gitCommit}"
-                            
+                            echo "Updating image tag in frontend_values.yaml to ${gitTag}"
+
                             // Update frontend_values.yaml file
-                            sh "sed -i 's|tag: .*|tag: \"${gitCommit}\"|g' frontend_values.yaml"
-                
+                            sh "sed -i 's|tag: .*|tag: \"${gitTag}\"|g' frontend_values.yaml"
+
                             // Configure git user
-                            sh "git config user.email 'nguyentankdb17@gmail.com'"
-                            sh "git config user.name 'nguyentankdb17'"
-                
+                            sh "git config user.email '${USER}@gmail.com'"
+                            sh "git config user.name '${USER}'"
+
                             // Commit and push changes
                             sh "git add frontend_values.yaml"
-                            sh "git commit -m 'ci: Update image tag to ${gitCommit}'"
+                            sh "git commit -m 'CI: Update image tag to ${gitTag}'"
                             sh "git push origin main"
                         }
                     }
