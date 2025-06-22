@@ -64,14 +64,14 @@ pipeline {
 
     // Update environment variables
     environment {
-        DOCKER_IMAGE_NAME = 'nguyentankdb17/microservice_app_frontend'
+        DOCKER_IMAGE_NAME = 'nguyentankdb17/microserviceapp_frontend'
         GIT_CONFIG_REPO_CREDENTIALS_ID = 'github'
         GIT_CONFIG_REPO_URL = 'https://github.com/nguyentankdb17/microservice_app-config.git'
     }
 
     stages {
         // Checkout src code from GitHub
-        stage('1. Checkout Code') {
+        stage('Checkout Code') {
             steps {
                 script {
                     echo "Start checking out source code..."
@@ -84,7 +84,7 @@ pipeline {
         }
 
         // Check latest commit tag
-        stage('2. Check latest commit tag') {
+        stage('Check latest commit tag') {
             steps {
                 script {
                     sh 'git fetch --tags'
@@ -110,7 +110,7 @@ pipeline {
         }
 
         // Code Style & Quality Check
-        stage('3. Code Style & Quality Check') {
+        stage('Code Style & Quality Check') {
             steps {
                 container('node') {
                     script {
@@ -140,7 +140,7 @@ pipeline {
         }
 
         // Build and Push with KANIKO
-        stage('4. Build & Push Docker Image') {
+        stage('Build & Push Docker Image') {
             steps {
                 // Run `script` outside `container` to get git commit first
                 script {
@@ -167,7 +167,7 @@ pipeline {
         }
 
         // Update K8s manifest repository with new image tag
-        stage('5. Update K8s Manifest Repo') {
+        stage('Update K8s Manifest Repo') {
             steps {
                 // Run in default 'jnlp' container
                 script {
