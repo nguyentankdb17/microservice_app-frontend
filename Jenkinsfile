@@ -92,7 +92,7 @@ pipeline {
 
                     // Get the latest git commit tag
                     echo "Checking latest git commit tag..."
-                    def commitTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
+                    def commitTag = sh(script: 'git tag --points-at HEAD', returnStdout: true).trim()
                     echo "Latest git commit tag is: ${commitTag}"
 
                     // Check if the tag is empty
