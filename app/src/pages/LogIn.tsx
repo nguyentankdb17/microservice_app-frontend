@@ -43,7 +43,7 @@ const Login: React.FC = () => {
                     <div className="border-dark-6 relative z-10 flex min-h-[328px] items-center justify-center rounded-2xl border border-dashed bg-white/10 p-6 md:p-10">
                         <div className="w-full text-center">
                             <div className="mx-auto w-full max-w-[290px] text-center">
-                                <h3 className="mb-10 text-4xl font-bold text-yellow-600">LOG IN</h3>
+                                <h3 className="mb-10 text-4xl font-bold text-yellow-500">LOG IN</h3>
                                 <p className="mx-auto mb-5 text-base text-gray-400">
                                     Continue by signing in with your account
                                 </p>
